@@ -4,6 +4,7 @@
   "description": "General template for general app",
   "main": "app.js",
   "scripts": {
+    "start": "node ./BACKEND/app.js",
     "prod": "start cmd /k node ./BACKEND/app.js && webpack -p",
     "dev": "start cmd /k supervisor ./BACKEND/app.js && webpack -p --watch"
   },
