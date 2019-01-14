@@ -1,0 +1,86 @@
+button {
+  color: black;
+  padding: 8px 14px;
+  margin: 8px;
+  text-align: center;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 9px;
+}
+
+.nffi {
+  background: #E75480;
+}
+
+.sffi {
+  background: pink;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.mainbutton {
+  padding: 15px 32px;
+  width: 300px;
+  font-weight: bold;
+}
+
+.minibutton {
+  padding: 3px 3px;
+  width: 80px;
+  font-size: 10px;
+}
+
+.smallInput {
+  width: 74px;
+}
+
+.footer-hr {
+  border: none;
+  background-color: black;
+  height: 1px;
+}
+
+.footer-p {
+  text-align: center;
+}
+
+.footer-a {
+  text-align: center;
+}
+
+legend {
+  color: black;
+}
+
+select {
+  width: 100%;
+}
+
+td {
+  width: 120px;
+  padding: 2px;
+  border: 1px solid black;
+  text-align: center;
+  font-weight: bold;
+}
+
+.inputName {
+  width: 200px;
+}
+
+.navbar {
+  border: 1px solid #A19889;
+  font-weight: bold;
+  color: black;
+}
+.container {
+  font-display: auto;
+}
+
+.row-frontpage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
