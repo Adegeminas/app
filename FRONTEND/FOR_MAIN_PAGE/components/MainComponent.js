@@ -13,10 +13,10 @@ class MainComponent extends React.Component {
 
     this.s = {
       background: {
-        height: '100vh',
-        width: '100vh',
+        height: '90vh',
+        width: '90vh'
         // display: 'flex',
-        'flex-direction': 'column'
+        // 'flex-direction': 'row'
       },
       field: {
         height: this.fieldLength + 'px',
@@ -71,6 +71,9 @@ class MainComponent extends React.Component {
             </tr>
           ))}
         </table>
+
+        <p> WASD for scrolling location, QE for +/- </p>
+        <p> Mouse Left for selecting, Mouse Right for moving </p>
       </div>)
     ;
   }

@@ -18,10 +18,11 @@ module.exports = class Universe {
       this.map.writeUInt16BE(0, i + 1);
     }
 
-    this.solians = [ new Solian(2, 1, 1, 'Linih') ];
+    this.solians = [new Solian(1, 1, 1, 'Linih'), new Solian(2, 3, 3, 'Rimira')];
 
 
-    this.setSolian(2, 1, 1);
+    this.setSolian(1, 1, 1);
+    this.setSolian(2, 3, 3);
   }
 
   getSolian(id) {
