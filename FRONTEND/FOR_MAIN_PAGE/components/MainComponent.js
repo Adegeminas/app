@@ -7,31 +7,53 @@ class MainComponent extends React.Component {
   constructor(props) {
     super(props);
 
-    const { socket } = props;
+    this.width = window.innerWidth - 100;
+    this.height = window.innerHeight - 100;
+    this.fieldLength = Math.min(this.height / this.props.length, this.width / this.props.length);
 
-    socket
-      .on('connect', function () {
-        // ...
-      })
-      .on('worldUpdate', function (worldState) {
-        this.props.updateWorldState(worldState);
-      }.bind(this));
+    this.s = {
+      background: {
+        height: '100vh',
+        width: '100vh',
+        // display: 'flex',
+        'flex-direction': 'column'
+      },
+      field: {
+        height: this.fieldLength + 'px',
+        width: this.fieldLength + 'px'
+      }
+    };
+
+    window.onresize = function () {
+      this.width = window.innerWidth - 100;
+      this.height = window.innerHeight - 100;
+    }.bind(this);
   }
+
   render() {
+    this.props.socket.emit('update', this.props.length, this.props.corner);
+
+    this.fieldLength = Math.min(this.height / this.props.length, this.width / this.props.length);
+    this.s.field = {
+      height: this.fieldLength + 'px',
+      width: this.fieldLength + 'px'
+    };
+
     return !this.props.ws ?
-      (<div style = { s.background }>
+      (<div style = { this.s.background }>
         null
       </div>) :
-      (<div style = { s.background }>
-        <b> { this.props.obj ? this.props.obj.id : 'null' } </b>
-        <br />
-
+      (<div style = { this.s.background }>
         <table>
           { this.props.ws.map(row => (
             <tr>
-              { row.map(field => (
+              { row.map((field) => (
                 <td
-                  style = { s.field }
+                  style = { Object.assign({}, this.s.field, {
+                    'backgroundImage': (field.object && field.object.id ?
+                      'url(/u.png), url(/' +  field.type + '.png)' :
+                      'url(/' +  field.type + '.png)')
+                  }) }
                   onClick = { function () {
                     this.props.selectCurrentObject(field.object);
                   }.bind(this) }
@@ -44,9 +66,7 @@ class MainComponent extends React.Component {
 
                     this.props.socket.emit('move', this.props.obj, dx, dy);
                   }.bind(this) }
-                >
-                  { field.object && field.object.id }
-                </td>
+                />
               ))}
             </tr>
           ))}
@@ -57,30 +77,14 @@ class MainComponent extends React.Component {
 }
 
 export default connect(
-  (state) => {
+  state => {
     return {
       ws: JSON.parse(state.appState.worldState),
-      obj: state.appState.currentObj
+      obj: state.appState.currentObj,
+      length: state.appState.mapLength,
+      corner: state.appState.mapCorner,
+      MAX_RANGE: state.appState.MAX_RANGE
     };
   },
-  (dispatch) => bindActionCreators(Actions, dispatch)
+  dispatch => bindActionCreators(Actions, dispatch)
 )(MainComponent);
-
-const s = {
-  background: {
-    display: 'flex',
-    'flex-direction': 'column'
-  },
-  flexbox: {
-    display: 'flex',
-    flex: 1
-  },
-  button: {
-    background: 'green'
-  },
-  field: {
-    height: '50px',
-    width: '50px',
-    border: '1px dotted gray'
-  }
-};

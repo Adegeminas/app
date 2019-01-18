@@ -3,48 +3,65 @@ const Field = require('./Field.js');
 
 module.exports = class Universe {
   constructor() {
-    this.MAX_RANGE = 20;
+    this.MAP_SIDE = 10000;
+    this.FIELD_BYTES = 3;
+    this.MAP_BUFFER_SIZE = this.MAP_SIDE * this.MAP_SIDE * this.FIELD_BYTES;
 
-    this.map = [];
-    for (let i = 0; i < this.MAX_RANGE; i++) {
-      this.map[i] = [];
-      for (let j = 0; j < this.MAX_RANGE; j++) {
-        this.map[i][j] = new Field(i, j);
-      }
+    // this.MAX_SOLIANS = 65535;
+    // this.SOLIAN_BYTES = 11;
+    // this.SOLIANS_BUFFER_SIZE = this.MAX_SOLIANS * this.SOLIAN_BYTES;
+
+    this.map = Buffer.alloc(this.MAP_BUFFER_SIZE);
+
+    for (let i = 0; i < this.MAP_BUFFER_SIZE; i += this.FIELD_BYTES) {
+      this.map.writeUInt8(Math.floor(2 * Math.random()), i);
+      this.map.writeUInt16BE(0, i + 1);
     }
 
-    this.solians = [
-      new Solian(1, 1, 'a'),
-      new Solian(1, 9, 'b'),
-      new Solian(3, 9, 'c'),
-      new Solian(6, 3, 'd'),
-      new Solian(9, 0, 'e')
-    ];
+    this.solians = [ new Solian(2, 1, 1, 'Linih') ];
 
-    this.map[1][1].setObject(this.getObject('a'));
-    this.map[1][9].setObject(this.getObject('b'));
-    this.map[3][9].setObject(this.getObject('c'));
-    this.map[6][3].setObject(this.getObject('d'));
-    this.map[9][0].setObject(this.getObject('e'));
+
+    this.setSolian(2, 1, 1);
+  }
+
+  getSolian(id) {
+    if (id === 0) return null;
+    return this.solians.filter(solian => solian.id === id)[0];
   }
 
   getField(x, y) {
-    return this.map[x][y];
+    const type = this.map.readUInt8(this.FIELD_BYTES * (x * this.MAP_SIDE + y));
+    const id = this.map.readUInt16BE(this.FIELD_BYTES * (x * this.MAP_SIDE + y) + 1);
+
+    return new Field(x, y, type, this.getSolian(id));
   }
 
-  getObject(id) {
-    return this.solians.filter(s => s.id === id)[0] || null;
+  setSolian(id, x, y) {
+    this.map.writeUInt16BE(id, this.FIELD_BYTES * (x * this.MAP_SIDE + y) + 1);
+  }
+
+  getPart(x, y, dx, dy) {
+    const part = [];
+
+    for (let i = x; i < x + dx; i++) {
+      part[i - x] = [];
+      for (let j = y; j < y + dy; j++) {
+        part[i - x][j - y] = this.getField(i, j);
+      }
+    }
+
+    return part;
   }
 
   moveOneStep(id, x, y) {
     return new Promise(function (resolve, reject) {
-      const obj = this.getObject(id);
+      const obj = this.getSolian(id);
 
       if (!obj) reject('no object');
       if (obj.state !== 'standing') return reject('is moving');
       if (Math.abs(x) + Math.abs(y) !== 1) return reject('not simple');
-      if (obj.x + x < 0 || obj.x + x >= this.MAX_RANGE) return reject('out of range');
-      if (obj.y + y < 0 || obj.y + y >= this.MAX_RANGE) return reject('out of range');
+      if (obj.x + x < 0 || obj.x + x >= this.MAP_SIDE) return reject('out of range');
+      if (obj.y + y < 0 || obj.y + y >= this.MAP_SIDE) return reject('out of range');
       if (this.getField(obj.x + x, obj.y + y).object) return reject('not empty');
 
       obj.state = 'moving';
@@ -54,13 +71,13 @@ module.exports = class Universe {
           obj.state = 'standing';
           return reject('not empty');
         }
-        this.getField(obj.x, obj.y).setObject(null);
+        this.setSolian(0, obj.x, obj.y);
 
         obj.x += x;
         obj.y += y;
         obj.state = 'standing';
 
-        this.getField(obj.x, obj.y).setObject(obj);
+        this.setSolian(obj.id, obj.x, obj.y);
         resolve(obj);
       }.bind(this), obj.speed);
     }.bind(this));
@@ -96,9 +113,5 @@ module.exports = class Universe {
         })
         .catch(console.error);
     }
-  }
-
-  start() {
-    // ..
   }
 };

@@ -59,11 +59,13 @@ select {
 }
 
 td {
-  width: 120px;
-  padding: 2px;
-  border: 1px solid black;
+  border: none;
   text-align: center;
   font-weight: bold;
+  font-size: 70px;
+  color: red;
+  background-repeat: no-repeat;
+  background-size: 100%;
 }
 
 .inputName {

@@ -30,7 +30,7 @@ app.use(require('./middleware/sendHttpError'));
 
 require('./routes')(app);
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../FRONTEND/public')));
 app.use(require('./middleware/errorHandler'));
 
 const server = http.createServer(app).listen(process.env.PORT || config.get('port'), () => {

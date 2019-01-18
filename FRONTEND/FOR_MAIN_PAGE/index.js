@@ -3,14 +3,8 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
 import store from './store.js';
-
+import socket from './socket.js';
 import MainComponent from './components/MainComponent.js';
-
-const socket = window.io.connect();
-
-// document.oncontextmenu = function (e) {
-//   e.preventDefault();
-// };
 
 ReactDOM.render(
   <Provider store = { store }>
@@ -19,3 +13,5 @@ ReactDOM.render(
 
   document.getElementById('root')
 );
+
+require('./controller');

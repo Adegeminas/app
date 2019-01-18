@@ -2,11 +2,11 @@ const path = require('path');
 
 module.exports = [ {
 
-  entry: './FRONTEND/FOR_MAIN_PAGE',
+  entry: './FOR_MAIN_PAGE',
 
   output: {
     filename: 'MainPageBundle.js',
-    path: path.resolve(__dirname, 'BACKEND/public/js/bundles/')
+    path: path.resolve(__dirname, 'public/js/bundles/')
   },
 
   module: {

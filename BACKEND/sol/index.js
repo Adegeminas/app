@@ -1,1 +1,3 @@
-module.exports = new (require('./classes/Universe.js'))();
+const u = new (require('./classes/Universe.js'))();
+
+module.exports = u;

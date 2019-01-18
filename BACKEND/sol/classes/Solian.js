@@ -1,9 +1,10 @@
 module.exports = class Solian {
-  constructor(x, y, id) {
+  constructor(id, x, y, name) {
     this.x = x;
     this.y = y;
     this.id = id;
-    this.speed = 50;
+    this.speed = 200;
     this.state = 'standing';
+    this.name = name;
   }
 };

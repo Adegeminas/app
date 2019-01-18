@@ -1,11 +1,10 @@
-module.exports = class Field {
-  constructor(x, y) {
-    this.object = null;
+class Field {
+  constructor(x, y, type, object) {
     this.x = x;
     this.y = y;
-  }
-
-  setObject(object) {
+    this.type = type;
     this.object = object;
   }
-};
+}
+
+module.exports = Field;
