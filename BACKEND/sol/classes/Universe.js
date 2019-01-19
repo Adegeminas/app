@@ -3,7 +3,7 @@ const Field = require('./Field.js');
 
 module.exports = class Universe {
   constructor() {
-    this.MAP_SIDE = 10000;
+    this.MAP_SIDE = 100;
     this.FIELD_BYTES = 3;
     this.MAP_BUFFER_SIZE = this.MAP_SIDE * this.MAP_SIDE * this.FIELD_BYTES;
 
@@ -18,11 +18,10 @@ module.exports = class Universe {
       this.map.writeUInt16BE(0, i + 1);
     }
 
-    this.solians = [new Solian(1, 1, 1, 'Linih'), new Solian(2, 3, 3, 'Rimira')];
+    this.solians = [ new Solian(2, 8, 3, 'Rimira') ];
 
 
-    this.setSolian(1, 1, 1);
-    this.setSolian(2, 3, 3);
+    this.setSolian(2, 8, 3);
   }
 
   getSolian(id) {
@@ -54,18 +53,25 @@ module.exports = class Universe {
     return part;
   }
 
-  moveOneStep(id, x, y) {
+  moveOneStep(id, x, y, d) {
     return new Promise(function (resolve, reject) {
       const obj = this.getSolian(id);
 
       if (!obj) reject('no object');
       if (obj.state !== 'standing') return reject('is moving');
-      if (Math.abs(x) + Math.abs(y) !== 1) return reject('not simple');
+      // if (Math.abs(x) + Math.abs(y) !== 1) return reject('not simple');
       if (obj.x + x < 0 || obj.x + x >= this.MAP_SIDE) return reject('out of range');
       if (obj.y + y < 0 || obj.y + y >= this.MAP_SIDE) return reject('out of range');
       if (this.getField(obj.x + x, obj.y + y).object) return reject('not empty');
 
       obj.state = 'moving';
+      obj.direction = d;
+
+      const int = setInterval(function () {
+        obj.frame = obj.frame === 4 ? 0 : obj.frame + 1;
+      }, obj.speed / 4);
+
+      obj.frame = 1;
 
       setTimeout(function () {
         if (this.getField(obj.x + x, obj.y + y).object) {
@@ -76,43 +82,38 @@ module.exports = class Universe {
 
         obj.x += x;
         obj.y += y;
-        obj.state = 'standing';
 
         this.setSolian(obj.id, obj.x, obj.y);
-        resolve(obj);
-      }.bind(this), obj.speed);
+
+        setTimeout(function () {
+          obj.state = 'standing';
+          obj.frame = 0;
+          clearInterval(int);
+          resolve(obj);
+        }, obj.speed / 2);
+      }.bind(this), obj.speed / 2);
     }.bind(this));
   }
 
   moveObject(id, x, y) {
     if (x === 0 && y === 0) return;
 
-    if (x !== 0) {
-      if (x > 0) {
-        this.moveOneStep(id, 1, 0)
-          .then(obj => {
-            this.moveObject(obj.id, x - 1, y);
-          })
-          .catch(console.error);
-      } else {
-        this.moveOneStep(id, -1, 0)
-          .then(obj => {
-            this.moveObject(obj.id, x + 1, y);
-          })
-          .catch(console.error);
-      }
-    } else if (y > 0) {
-      this.moveOneStep(id, 0, 1)
-        .then(obj => {
-          this.moveObject(obj.id, x, y - 1);
-        })
-        .catch(console.error);
-    } else {
-      this.moveOneStep(id, 0, -1)
-        .then(obj => {
-          this.moveObject(obj.id, x, y + 1);
-        })
-        .catch(console.error);
+    if (x > 0 && y > 0) {
+      this.moveOneStep(id, 1, 0, 's').then(obj => this.moveObject(obj.id, x - 1, y) && false).catch(console.error);
+    } else if (x > 0 && y === 0) {
+      this.moveOneStep(id, 1, 0, 's').then(obj => this.moveObject(obj.id, x - 1, y) && false).catch(console.error);
+    } else if (x > 0 && y < 0) {
+      this.moveOneStep(id, 0, -1, 'w').then(obj => this.moveObject(obj.id, x, y + 1) && false).catch(console.error);
+    } else if (x === 0 && y > 0) {
+      this.moveOneStep(id, 0, 1, 'e').then(obj => this.moveObject(obj.id, x, y - 1) && false).catch(console.error);
+    } else if (x === 0 && y < 0) {
+      this.moveOneStep(id, 0, -1, 'w').then(obj => this.moveObject(obj.id, x, y + 1) && false).catch(console.error);
+    } else if (x < 0 && y === 0) {
+      this.moveOneStep(id, -1, 0, 'n').then(obj => this.moveObject(obj.id, x + 1, y) && false).catch(console.error);
+    } else if (x < 0 && y < 0) {
+      this.moveOneStep(id, -1, 0, 'n').then(obj => this.moveObject(obj.id, x + 1, y) && false).catch(console.error);
+    } else if (x < 0 && y > 0) {
+      this.moveOneStep(id, 0, 1, 'e').then(obj => this.moveObject(obj.id, x, y - 1) && false).catch(console.error);
     }
   }
 };

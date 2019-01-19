@@ -3,6 +3,18 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../actions';
 
+// let frame = 0;
+
+// setInterval(function () {
+//   frame = frame === 4 ? 0 : frame + 1;
+// }, 180);
+
+function getFrame(obj) {
+  if (obj.state === 'standing') return 'url(/imgs/ork/standing/standing' + ((new Date()).getSeconds() % 8) + '.png)';
+  return 'url(/imgs/ork/moving/' + obj.direction + '/' + obj.frame + '.png)';
+}
+
+
 class MainComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -13,8 +25,8 @@ class MainComponent extends React.Component {
 
     this.s = {
       background: {
-        height: '90vh',
-        width: '90vh'
+        // height: '90vh',
+        // width: '90vh'
         // display: 'flex',
         // 'flex-direction': 'row'
       },
@@ -31,7 +43,7 @@ class MainComponent extends React.Component {
   }
 
   render() {
-    this.props.socket.emit('update', this.props.length, this.props.corner);
+    this.props.socket.emit('update', this.props.length, this.props.length, this.props.corner);
 
     this.fieldLength = Math.min(this.height / this.props.length, this.width / this.props.length);
     this.s.field = {
@@ -51,7 +63,7 @@ class MainComponent extends React.Component {
                 <td
                   style = { Object.assign({}, this.s.field, {
                     'backgroundImage': (field.object && field.object.id ?
-                      'url(/u.png), url(/' +  field.type + '.png)' :
+                      getFrame(field.object) + ', url(/' +  field.type + '.png)' :
                       'url(/' +  field.type + '.png)')
                   }) }
                   onClick = { function () {

@@ -1,8 +1,3 @@
-// const async = require('async');
-// const config = require('../config');
-// const User = require('../lib/mongoose').models.users;
-// const baseApiLogic = require('../lib/baseApiLogic');
-
 function debounce(f, ms) {
   let timer = null;
 
@@ -27,9 +22,9 @@ module.exports = function (server) {
   io.sockets.on('connection', function (socket) {
     socket.emit('setStats', { MAX_RANGE: u.MAP_SIDE});
 
-    socket.on('update', debounce(function (length, corner) {
-      socket.emit('worldUpdate', JSON.stringify(u.getPart(corner[0], corner[1], length, length)));
-    }, 100));
+    socket.on('update', debounce(function (height, width, corner) {
+      socket.emit('worldUpdate', JSON.stringify(u.getPart(corner[0], corner[1], height, width)));
+    }, 50));
 
     socket.on('move', function (obj, x, y) {
       if (!obj) return;
