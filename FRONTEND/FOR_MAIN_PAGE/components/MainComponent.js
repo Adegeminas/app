@@ -3,12 +3,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../actions';
 
-// let frame = 0;
-
-// setInterval(function () {
-//   frame = frame === 4 ? 0 : frame + 1;
-// }, 180);
-
 function getFrame(obj) {
   if (obj.state === 'standing') return 'url(/imgs/ork/standing/standing' + ((new Date()).getSeconds() % 8) + '.png)';
   return 'url(/imgs/ork/moving/' + obj.direction + '/' + obj.frame + '.png)';
