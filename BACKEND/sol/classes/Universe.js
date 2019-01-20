@@ -10,7 +10,9 @@ module.exports = class Universe {
     this.map = Buffer.alloc(this.MAP_BUFFER_SIZE);
 
     for (let i = 0; i < this.MAP_BUFFER_SIZE; i += this.FIELD_BYTES) {
-      this.map.writeUInt8(Math.floor(2 * Math.random()), i);
+      const type = Math.random() > 0.8 ? 1 : 0;
+
+      this.map.writeUInt8(type, i);
       this.map.writeUInt16BE(0, i + 1);
     }
 
@@ -60,9 +62,12 @@ module.exports = class Universe {
       if (obj.state !== 'standing') return reject('is moving');
       if (obj.x + x < 0 || obj.x + x >= this.MAP_SIDE) return reject('out of range');
       if (obj.y + y < 0 || obj.y + y >= this.MAP_SIDE) return reject('out of range');
-      if (this.getField(obj.x + x, obj.y + y).object) {
+
+      const targetField = this.getField(obj.x + x, obj.y + y);
+
+      if (!targetField.isMovable || targetField.object) {
         obj.state = 'standing';
-        return reject('not empty');
+        return reject('isnt movable');
       }
 
       obj.state = 'moving';
@@ -76,7 +81,7 @@ module.exports = class Universe {
       // obj.frame = 1;
 
       setTimeout(function () {
-        if (this.getField(obj.x + x, obj.y + y).object) {
+        if (targetField.object) {
           obj.state = 'standing';
           obj.frame = 0;
           clearInterval(int);

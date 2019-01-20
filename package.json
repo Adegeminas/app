@@ -421,7 +421,7 @@
       ],
       "max-params": [
         2,
-        4
+        10
       ],
       "no-bitwise": 2
     }
