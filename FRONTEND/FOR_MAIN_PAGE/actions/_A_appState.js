@@ -8,7 +8,6 @@ import store from '../store.js';
 import socket from '../socket.js';
 
 export const updateWorldState = worldState => {
-  if (worldState === store.getState().worldState) return { type: 'NO_ACTION'};
   return {
     type: UPDATE_WORLD_STATE,
     payload: { worldState }

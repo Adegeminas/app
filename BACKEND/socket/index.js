@@ -18,24 +18,31 @@ module.exports = function (server) {
     };
   }
 
-  const updateTime = 5;
-
   io.sockets.on('connection', function (socket) {
     socket.emit('setStats', { MAX_RANGE: u.MAP_SIDE});
 
-    // socket.on('update', debounce(function (height, width, corner) {
-    //   socket.emit('worldUpdate', JSON.stringify(u.getPart(corner[0], corner[1], height, width)));
-    // }), 10);
+    let lastWorldState = null;
+    const updateTime = 5;
 
     let mainTick = setInterval(function () {
-      socket.emit('worldUpdate', JSON.stringify(u.getPart(0, 0, 10, 10)));
+      const worldState = JSON.stringify(u.getPart(0, 0, 10, 10));
+
+      if (worldState !== lastWorldState) {
+        lastWorldState = worldState;
+        socket.emit('worldUpdate', worldState);
+      }
     }, updateTime);
 
     socket.on('changeFokus', function (length, corner) {
       clearInterval(mainTick);
 
       mainTick = setInterval(function () {
-        socket.emit('worldUpdate', JSON.stringify(u.getPart(corner[0], corner[1], length, length)));
+        const worldState = JSON.stringify(u.getPart(corner[0], corner[1], length, length));
+
+        if (worldState !== lastWorldState) {
+          lastWorldState = worldState;
+          socket.emit('worldUpdate', worldState);
+        }
       }, updateTime);
     });
 
