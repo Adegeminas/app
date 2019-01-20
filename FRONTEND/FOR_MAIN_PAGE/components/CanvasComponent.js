@@ -21,7 +21,7 @@ class CanvasComponent extends React.Component {
     };
 
     // setInterval(function () {
-    this.props.socket.emit('update', this.props.length, this.props.length, this.props.corner);
+    // this.props.socket.emit('update', this.props.length, this.props.length, this.props.corner);
     // }.bind(this), 16);
   }
 
@@ -136,9 +136,9 @@ class CanvasComponent extends React.Component {
       });
     });
 
-    setTimeout(function () {
-      this.props.socket.emit('update', this.props.length, this.props.length, this.props.corner);
-    }.bind(this), 33);
+    // setTimeout(function () {
+    //   this.props.socket.emit('update', this.props.length, this.props.length, this.props.corner);
+    // }.bind(this), 33);
   }
 
   render() {

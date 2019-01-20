@@ -55,14 +55,12 @@ export function appState(state = initialDataState, action) {
     case CHANGE_MAP_LENGTH:
       return {
         ...state,
-        mapLength: Math.min(Math.max(state.mapLength + action.payload.delta, 3),
-          state.MAX_RANGE - Math.max(state.mapCorner[0], state.mapCorner[1]))
+        mapLength: action.payload.newLength
       };
     case CHANGE_MAP_CORNER:
       return {
         ...state,
-        mapCorner: [Math.min(Math.max(state.mapCorner[0] + action.payload.deltaX, 0), state.MAX_RANGE - state.mapLength),
-          Math.min(Math.max(state.mapCorner[1] + action.payload.deltaY, 0), state.MAX_RANGE - state.mapLength)]
+        mapCorner: action.payload.newCorner
       };
     default:
       return state;
