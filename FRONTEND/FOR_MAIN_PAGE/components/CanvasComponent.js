@@ -3,6 +3,23 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../actions';
 
+function debounce(f, ms) {
+  let timer = null;
+
+  return function (...args) {
+    const onComplete = () => {
+      f.apply(this, args);
+      timer = null;
+    };
+
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    timer = setTimeout(onComplete, ms);
+  };
+}
+
 class CanvasComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -20,9 +37,9 @@ class CanvasComponent extends React.Component {
       }
     };
 
-    setInterval(function () {
-      this.props.socket.emit('update', this.props.length, this.props.length, this.props.corner);
-    }.bind(this), 16);
+    // setInterval(function () {
+    this.props.socket.emit('update', this.props.length, this.props.length, this.props.corner);
+    // }.bind(this), 16);
   }
 
   componentDidMount() {
@@ -104,6 +121,10 @@ class CanvasComponent extends React.Component {
           }
         });
       });
+
+      setTimeout(function () {
+        this.props.socket.emit('update', this.props.length, this.props.length, this.props.corner);
+      }.bind(this), 33);
     }.bind(this);
   }
 
