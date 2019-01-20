@@ -18,6 +18,15 @@ module.exports = [ {
         query: {
           presets: ['es2015', 'stage-0', 'react', 'env']
         }
+      },
+      {
+        test: /\.(png|jpg|gif)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {}
+          }
+        ]
       }
     ]
   },

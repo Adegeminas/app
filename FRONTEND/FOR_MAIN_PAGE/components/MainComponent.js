@@ -4,10 +4,13 @@ import { connect } from 'react-redux';
 import * as Actions from '../actions';
 
 function getFrame(obj) {
-  if (obj.state === 'standing') return 'url(/imgs/ork/standing/standing' + ((new Date()).getSeconds() % 8) + '.png)';
+  if (obj.state === 'standing') {
+    return 'url(/imgs/ork/standing/standing' +
+      ((new Date()).getSeconds() + obj.id) % 8 +
+      '.png)';
+  }
   return 'url(/imgs/ork/moving/' + obj.direction + '/' + obj.frame + '.png)';
 }
-
 
 class MainComponent extends React.Component {
   constructor(props) {
@@ -19,10 +22,8 @@ class MainComponent extends React.Component {
 
     this.s = {
       background: {
-        // height: '90vh',
-        // width: '90vh'
-        // display: 'flex',
-        // 'flex-direction': 'row'
+        display: 'flex',
+        'flex-direction': 'row'
       },
       field: {
         height: this.fieldLength + 'px',

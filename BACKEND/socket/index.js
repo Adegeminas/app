@@ -24,7 +24,7 @@ module.exports = function (server) {
 
     socket.on('update', debounce(function (height, width, corner) {
       socket.emit('worldUpdate', JSON.stringify(u.getPart(corner[0], corner[1], height, width)));
-    }, 50));
+    }, 0));
 
     socket.on('move', function (obj, x, y) {
       if (!obj) return;

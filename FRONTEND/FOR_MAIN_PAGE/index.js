@@ -4,14 +4,17 @@ import { Provider } from 'react-redux';
 
 import store from './store.js';
 import socket from './socket.js';
-import MainComponent from './components/MainComponent.js';
+// import MainComponent from './components/MainComponent.js';
+import CanvasComponent from './components/CanvasComponent.js';
 
 ReactDOM.render(
   <Provider store = { store }>
-    <MainComponent socket = { socket }/>
+    <CanvasComponent socket = { socket } />
   </Provider>,
 
   document.getElementById('root')
 );
 
 require('./controller');
+
+// <MainComponent socket = { socket } />
