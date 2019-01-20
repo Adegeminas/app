@@ -11,7 +11,9 @@ socket
     store.dispatch(Actions.setStats(stats));
   })
   .on('worldUpdate', function (worldState) {
+    // if (store.getState().worldState !== worldState) {
     store.dispatch(Actions.updateWorldState(worldState));
+    // }
   });
 
 module.exports = socket;
