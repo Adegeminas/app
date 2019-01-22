@@ -127,7 +127,7 @@ class CanvasComponent extends React.Component {
                       s.direction === 'nw' ? 5 :
                         s.direction === 'w' ? 6 : 7;
 
-            let frame = Math.floor((s.frames - 1) * (Date.now() - Number(s.movingStartTime)) / s.speed);
+            let frame = Math.floor((s.frames - 1) * (this.props.ts - s.movingStartTime) / s.speed);
 
             if (frame > s.frames - 1) frame = s.frames - 1;
 
@@ -139,10 +139,6 @@ class CanvasComponent extends React.Component {
         }
       });
     });
-
-    // setTimeout(function () {
-    //   this.props.socket.emit('update', this.props.length, this.props.length, this.props.corner);
-    // }.bind(this), 33);
   }
 
   render() {
@@ -152,7 +148,7 @@ class CanvasComponent extends React.Component {
     return (
       <div style = { this.s.background }>
         <canvas id = 'myCanvas' width = '640' height = '640'/>
-        <p> Lag = { Date.now() - this.props.ts } ms </p>
+        <p> Lag = { Date.now() - this.props.ts } ms. ObjName: { this.props.obj && this.props.obj.name } </p>
         <p> WASD for scrolling location, QE for +/- </p>
         <p> Mouse Left for selecting, Mouse Right for moving </p>
       </div>
