@@ -127,9 +127,13 @@ class CanvasComponent extends React.Component {
                       s.direction === 'nw' ? 5 :
                         s.direction === 'w' ? 6 : 7;
 
-            this.ctx.drawImage(this.animations, 64 * column, 64 * s.frame, 64, 64,
-              this.tileSize * (iY + s.dir[1] * s.frame / 4),
-              this.tileSize * (iX + s.dir[0] * s.frame / 4),
+            let frame = Math.floor((s.frames - 1) * (Number(this.props.ts) - Number(s.movingStartTime)) / s.speed);
+
+            if (frame > s.frames - 1) frame = s.frames - 1;
+
+            this.ctx.drawImage(this.animations, 64 * column, 64 * frame, 64, 64,
+              this.tileSize * (iY + s.dir[1] * frame / 4),
+              this.tileSize * (iX + s.dir[0] * frame / 4),
               this.tileSize, this.tileSize);
           }
         }
@@ -159,6 +163,7 @@ export default connect(
   state => {
     return {
       ws: JSON.parse(state.appState.worldState),
+      ts: state.appState.timeStamp,
       obj: state.appState.currentObj,
       length: state.appState.mapLength,
       corner: state.appState.mapCorner,

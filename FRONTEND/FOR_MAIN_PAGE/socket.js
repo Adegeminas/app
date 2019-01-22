@@ -10,10 +10,8 @@ socket
   .on('setStats', function (stats) {
     store.dispatch(Actions.setStats(stats));
   })
-  .on('worldUpdate', function (worldState) {
-    // if (store.getState().worldState !== worldState) {
-    store.dispatch(Actions.updateWorldState(worldState));
-    // }
+  .on('worldUpdate', function (worldState, timeStamp) {
+    store.dispatch(Actions.updateWorldState(worldState, timeStamp));
   });
 
 module.exports = socket;

@@ -7,10 +7,10 @@ export const SET_STATS = 'SET_STATS';
 import store from '../store.js';
 import socket from '../socket.js';
 
-export const updateWorldState = worldState => {
+export const updateWorldState = (worldState, timeStamp) => {
   return {
     type: UPDATE_WORLD_STATE,
-    payload: { worldState }
+    payload: { worldState, timeStamp }
   };
 };
 

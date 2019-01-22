@@ -50,11 +50,10 @@ module.exports = class Universe {
         part[i - x][j - y] = this.getField(i, j);
       }
     }
-
     return part;
   }
 
-  moveOneStep(id, x, y, d) {
+  moveOneStep(id, x, y, d = 'n') {
     return new Promise(function (resolve, reject) {
       const obj = this.getSolian(id);
 
@@ -63,28 +62,23 @@ module.exports = class Universe {
       if (obj.x + x < 0 || obj.x + x >= this.MAP_SIDE) return reject('out of range');
       if (obj.y + y < 0 || obj.y + y >= this.MAP_SIDE) return reject('out of range');
 
-      const targetField = this.getField(obj.x + x, obj.y + y);
+      let targetField = this.getField(obj.x + x, obj.y + y);
 
       if (!targetField.isMovable || targetField.object) {
         obj.state = 'standing';
         return reject('isnt movable');
       }
 
+      obj.movingStartTime = Date.now();
       obj.state = 'moving';
       obj.direction = d;
       obj.dir = obj.getDirection(d);
 
-      const int = setInterval(function () {
-        obj.frame = obj.frame === 4 ? 0 : obj.frame + 1;
-      }, obj.speed / 4);
-
-      // obj.frame = 1;
-
       setTimeout(function () {
+        targetField = this.getField(obj.x + x, obj.y + y);
+
         if (targetField.object) {
           obj.state = 'standing';
-          obj.frame = 0;
-          clearInterval(int);
           return reject('not empty');
         }
         this.setSolian(0, obj.x, obj.y);
@@ -95,8 +89,6 @@ module.exports = class Universe {
         this.setSolian(obj.id, obj.x, obj.y);
 
         obj.state = 'standing';
-        obj.frame = 0;
-        clearInterval(int);
         resolve(obj);
       }.bind(this), obj.speed);
     }.bind(this));
@@ -105,6 +97,17 @@ module.exports = class Universe {
   moveObject(id, x, y) {
     if (!id) return;
     if (x === 0 && y === 0) return;
+
+    // const solian = this.getSolian(id);
+    // const targetX = solian.x + x;
+    // const targetY = solian.y + y;
+    // const p3c = closestFields(solian.x, solian.y, targetX, targetY);
+    // const p3v = p3c.map(arr => [arr[0] - solian.x, arr[1] - solian.y]);
+    // console.log(p3v);
+    // this.moveOneStep(id, p3v[0][0], p3v[0][1])
+    //   .then(obj => this.moveObject(obj.id, x + p3v[0][0], y + p3v[0][1]) && false)
+    //   .catch(obj => this.moveObject(obj.id, x + p3v[1][0], y + p3v[1][1]) && false);
+
 
     if (x > 0 && y > 0) {
       this.moveOneStep(id, 1, 1, 'se').then(obj => this.moveObject(obj.id, x - 1, y - 1) && false).catch(console.error);
@@ -125,3 +128,28 @@ module.exports = class Universe {
     }
   }
 };
+
+function dist(x1, y1, x2, y2) {
+  return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
+}
+
+function nearlyFields(x, y) {
+  return [
+    [x - 1, y],
+    [x - 1, y - 1],
+    [x - 1, y + 1],
+    [x + 1, y],
+    [x + 1, y - 1],
+    [x + 1, y + 1],
+    [x, y - 1],
+    [x, y + 1]
+  ];
+}
+
+function closestFields(x1, y1, x2, y2) {
+  const sorted = nearlyFields(x1, y1).sort((a, b) => {
+    return dist(a[0], a[1], x2, y2) > dist(b[0], b[1], x2, y2);
+  });
+
+  return [sorted[0], sorted[1], sorted[2]];
+}

@@ -8,7 +8,9 @@ module.exports = class Solian {
     this.direction = 'n';
     this.name = name;
     this.frame = 0;
+    this.frames = 5;
     this.dir = [0, 0];
+    this.movingStartTime = 0;
   }
 
   getDirection(d) {
