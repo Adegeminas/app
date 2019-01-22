@@ -50,8 +50,6 @@ class WebGLComponent extends React.Component {
 
         const obj = this.props.ws[Math.ceil(point.x) - 1][Math.ceil(point.y) - 1].object;
 
-        console.log(obj);
-
         this.props.selectCurrentObject(obj);
       }
     }.bind(this);
@@ -87,15 +85,28 @@ class WebGLComponent extends React.Component {
 
   async componentDidMount() {
     document.getElementById('div').appendChild(this.renderer.domElement);
+    // document.getElementById('div').appendChild(this.paliter);
 
-    this.fieldTexture = await this.syncLoadTexture('./1.png');
-    this.solianTexture = await this.syncLoadTexture('./u.png');
-    this.fieldMaterial = new THREE.MeshBasicMaterial({ map:  this.fieldTexture});
-    this.solianMaterial = new THREE.MeshBasicMaterial({ map:  this.solianTexture});
-    this.fieldGeometry = new THREE.PlaneGeometry(1, 1);
+    this.fieldTexture1 = await this.syncLoadTexture('./0.png');
+    this.fieldTexture0 = await this.syncLoadTexture('./1.png');
+    this.fieldMaterial0 = new THREE.MeshBasicMaterial({ map:  this.fieldTexture0});
+    this.fieldMaterial1 = new THREE.MeshBasicMaterial({ map:  this.fieldTexture1});
+    this.fieldGeometry0 = new THREE.PlaneGeometry(1, 1);
+    this.fieldGeometry1 = new THREE.BoxGeometry(1, 1, 1);
     this.solianGeometry = new THREE.BoxGeometry(1, 1, 1);
 
-    this.animate();
+
+    // this.solianTexture = await this.syncLoadTexture('./animations.png');
+    const animations = new Image(512, 320);
+
+    animations.src = './animations.png';
+
+    animations.onload = function () {
+      this.animations = animations;
+      this.animate();
+    }.bind(this);
+
+    // this.animate();
   }
 
   syncLoadTexture(path) {
@@ -114,8 +125,20 @@ class WebGLComponent extends React.Component {
     }.bind(this));
   }
 
+  column(direction) {
+    return direction === 'n' ? 6 :
+      direction === 'ne' ? 5 :
+        direction === 'e' ? 0 :
+          direction === 'se' ? 1 :
+            direction === 's' ? 2 :
+              direction === 'nw' ? 7 :
+                direction === 'w' ? 4 : 3;
+  }
+
   addField(type, x, y) {
-    const field = new THREE.Mesh(this.fieldGeometry, this.fieldMaterial);
+    const field = type ?
+      new THREE.Mesh(this.fieldGeometry1, this.fieldMaterial0) :
+      new THREE.Mesh(this.fieldGeometry0, this.fieldMaterial1);
 
     field.position.x = x + 0.5;
     field.position.y = y + 0.5;
@@ -124,13 +147,45 @@ class WebGLComponent extends React.Component {
     this.fields.add(field);
   }
 
-  addSolian(x, y) {
-    const solian = new THREE.Mesh(this.solianGeometry, this.solianMaterial);
+  addSolian(x, y, s) {
+    const paliter = document.createElement('canvas');
+    const ctx = paliter.getContext('2d');
 
-    solian.position.x = x + 0.5;
-    solian.position.y = y + 0.5;
+    paliter.height = 64;
+    paliter.width = 64;
 
-    this.solians.add(solian);
+    if (s.state === 'standing') {
+      ctx.clearRect(0, 0, 64, 64);
+      ctx.drawImage(this.animations, 0, 64 * (new Date()).getSeconds() % 7, 64, 64,
+        0, 0, 64, 64);
+
+      const tex = new THREE.CanvasTexture(paliter);
+      const solianMaterial = new THREE.MeshBasicMaterial({ map:  tex});
+      const solian = new THREE.Mesh(this.solianGeometry, solianMaterial);
+
+      solian.position.x = x + 0.5;
+      solian.position.y = y + 0.5;
+
+      this.solians.add(solian);
+    } else {
+      const column = this.column(s.direction);
+      let frame = Math.floor((s.frames - 1) * (Date.now() - this.props.lag - s.movingStartTime) / s.speed);
+
+      if (frame > s.frames - 1) frame = s.frames - 1;
+
+      ctx.clearRect(0, 0, 64, 64);
+      ctx.drawImage(this.animations, 64 * column, 64 * frame, 64, 64,
+        0, 0, 64, 64);
+
+      const tex = new THREE.CanvasTexture(paliter);
+      const solianMaterial = new THREE.MeshBasicMaterial({ map:  tex});
+      const solian = new THREE.Mesh(this.solianGeometry, solianMaterial);
+
+      solian.position.x = x + 0.5;
+      solian.position.y = y + 0.5;
+
+      this.solians.add(solian);
+    }
   }
 
   animate() {
@@ -150,7 +205,7 @@ class WebGLComponent extends React.Component {
     if (this.props.ws) {
       this.props.ws.forEach((row, iX) => {
         row.forEach((field, iY) => {
-          this.addField(1, iX, iY);
+          this.addField(field.type, iX, iY);
         });
       });
 
@@ -160,13 +215,13 @@ class WebGLComponent extends React.Component {
             const s = field.object;
 
             if (s.state === 'standing') {
-              this.addSolian(iX, iY);
+              this.addSolian(iX, iY, s);
             } else {
               let frame = Math.floor((s.frames - 1) * (Date.now() - this.props.lag - s.movingStartTime) / s.speed);
 
               if (frame > s.frames - 1) frame = s.frames - 1;
 
-              this.addSolian(iX + s.dir[0] * frame / 4, iY + s.dir[1] * frame / 4);
+              this.addSolian(iX + s.dir[0] * frame / 4, iY + s.dir[1] * frame / 4, s);
             }
           }
         });

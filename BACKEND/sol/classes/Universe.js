@@ -10,8 +10,8 @@ module.exports = class Universe {
     this.map = Buffer.alloc(this.MAP_BUFFER_SIZE);
 
     for (let i = 0; i < this.MAP_BUFFER_SIZE; i += this.FIELD_BYTES) {
-      // const type = Math.random() > 0.8 ? 1 : 0;
-      const type = 0;
+      const type = Math.random() > 0.8 ? 1 : 0;
+      // const type = 0;
 
       this.map.writeUInt8(type, i);
       this.map.writeUInt16BE(0, i + 1);
