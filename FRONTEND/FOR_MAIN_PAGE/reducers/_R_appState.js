@@ -11,6 +11,7 @@ const initialDataState = {
   mapLength: 10,
   worldState: null,
   timeStamp: null,
+  serverLag: null,
   currentObj: null,
   MAX_RANGE: 3
 };
@@ -47,6 +48,7 @@ export function appState(state = initialDataState, action) {
         ...state,
         worldState: newWS,
         timeStamp: action.payload.timeStamp,
+        serverLag: action.payload.serverLag,
         currentObj: newCurrentObj
       };
     case SELECT_CURRENT_OBJECT:

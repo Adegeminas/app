@@ -11,7 +11,7 @@ socket
     store.dispatch(Actions.setStats(stats));
   })
   .on('worldUpdate', function (worldState, timeStamp) {
-    store.dispatch(Actions.updateWorldState(worldState, timeStamp));
+    store.dispatch(Actions.updateWorldState(worldState, timeStamp, Date.now() - timeStamp));
   });
 
 module.exports = socket;

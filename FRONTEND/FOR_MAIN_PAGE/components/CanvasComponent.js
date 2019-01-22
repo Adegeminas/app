@@ -127,7 +127,7 @@ class CanvasComponent extends React.Component {
                       s.direction === 'nw' ? 5 :
                         s.direction === 'w' ? 6 : 7;
 
-            let frame = Math.floor((s.frames - 1) * (this.props.ts - s.movingStartTime) / s.speed);
+            let frame = Math.floor((s.frames - 1) * (Date.now() - this.props.lag - s.movingStartTime) / s.speed);
 
             if (frame > s.frames - 1) frame = s.frames - 1;
 
@@ -161,6 +161,7 @@ export default connect(
     return {
       ws: JSON.parse(state.appState.worldState),
       ts: state.appState.timeStamp,
+      lag: state.appState.serverLag,
       obj: state.appState.currentObj,
       length: state.appState.mapLength,
       corner: state.appState.mapCorner,
