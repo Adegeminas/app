@@ -20,9 +20,8 @@ class CanvasComponent extends React.Component {
       }
     };
 
-    // setInterval(function () {
-    // this.props.socket.emit('update', this.props.length, this.props.length, this.props.corner);
-    // }.bind(this), 16);
+    // this.drawWS = this.drawWS.bind(this);
+    // this.tick = this.tick.bind(this);
   }
 
   componentDidMount() {
@@ -61,11 +60,19 @@ class CanvasComponent extends React.Component {
 
     this.animations = new Image(512, 320);
     this.animations.src = './animations.png';
+
+    this.drawWS();
   }
 
-  // test
+  // componentDidUpdate() {
+  //   this.drawWS();
+  // }
 
   drawWS() {
+    requestAnimationFrame(this.drawWS.bind(this));
+
+    console.log('Drawed');
+
     if (!this.props.ws) return;
     if (this.lastLength !== this.props.length) {
       this.lastLength = this.props.length;
@@ -143,7 +150,6 @@ class CanvasComponent extends React.Component {
 
   render() {
     this.tileSize = Math.floor(this.canvasSize / this.props.length);
-    this.drawWS();
 
     return (
       <div style = { this.s.background }>
