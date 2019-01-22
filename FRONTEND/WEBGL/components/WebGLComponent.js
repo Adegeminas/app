@@ -155,8 +155,10 @@ class WebGLComponent extends React.Component {
     paliter.width = 64;
 
     if (s.state === 'standing') {
+      const frame = (new Date()).getSeconds() % 7;
+
       ctx.clearRect(0, 0, 64, 64);
-      ctx.drawImage(this.animations, 0, 64 * (new Date()).getSeconds() % 7, 64, 64,
+      ctx.drawImage(this.animations, 64 * frame, 0, 64, 64,
         0, 0, 64, 64);
 
       const tex = new THREE.CanvasTexture(paliter);
