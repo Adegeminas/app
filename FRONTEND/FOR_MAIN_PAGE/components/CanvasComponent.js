@@ -19,9 +19,6 @@ class CanvasComponent extends React.Component {
         height: '100%'
       }
     };
-
-    // this.drawWS = this.drawWS.bind(this);
-    // this.tick = this.tick.bind(this);
   }
 
   componentDidMount() {

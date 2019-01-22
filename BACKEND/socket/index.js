@@ -41,7 +41,7 @@ module.exports = function (server) {
 
         if (worldState !== lastWorldState) {
           lastWorldState = worldState;
-          socket.emit('worldUpdate', worldState);
+          socket.emit('worldUpdate', worldState, Date.now());
         }
       }, updateTime);
     });
